@@ -1,13 +1,24 @@
-import { useState } from "react";
-import QuestionTimer from "./QuestionTimer";
-import Answers from "./Answers";
-import QUESTIONS from "../questions";
+import { useState } from 'react';
+
+import QuestionTimer from './QuestionTimer.jsx';
+import Answers from './Answers.jsx';
+import QUESTIONS from '../questions.js';
 
 export default function Question({ index, onSelectAnswer, onSkipAnswer }) {
   const [answer, setAnswer] = useState({
-    selectedAnswer: "",
+    selectedAnswer: '',
     isCorrect: null,
   });
+
+  let timer = 10000;
+
+  if (answer.selectedAnswer) {
+    timer = 1000;
+  }
+
+  if (answer.isCorrect !== null) {
+    timer = 2000;
+  }
 
   function handleSelectAnswer(answer) {
     setAnswer({
@@ -27,17 +38,22 @@ export default function Question({ index, onSelectAnswer, onSkipAnswer }) {
     }, 1000);
   }
 
-  let answerState = "";
+  let answerState = '';
 
   if (answer.selectedAnswer && answer.isCorrect !== null) {
-    answerState = answer.isCorrect ? "correct" : "wrong";
+    answerState = answer.isCorrect ? 'correct' : 'wrong';
   } else if (answer.selectedAnswer) {
-    answerState = "answered";
+    answerState = 'answered';
   }
 
   return (
     <div id="question">
-      <QuestionTimer timeout={10000} onTimeout={onSkipAnswer} />
+      <QuestionTimer
+        key={timer}
+        timeout={timer}
+        onTimeout={answer.selectedAnswer === '' ? onSkipAnswer : null}
+        mode={answerState}
+      />
       <h2>{QUESTIONS[index].text}</h2>
       <Answers
         answers={QUESTIONS[index].answers}
